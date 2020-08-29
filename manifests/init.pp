@@ -5,7 +5,8 @@ class sshd(
   $nagios_check_ssh_hostname = 'absent',
   Array[Variant[String,Integer]]
     $ports = [ 22 ],
-  $shared_ip = 'no',
+  Boolean
+    $shared_ip = false,
   $host_aliases = $facts['fqdn'],
   $ensure_version = 'installed',
   Array[String]

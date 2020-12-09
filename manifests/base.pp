@@ -46,7 +46,7 @@ class sshd::base {
   # Now add the key, if we've got one
   if $settings::storeconfigs {
     if !empty($::sshrsakey) {
-      @@sshkey{"${::fqdn}-rsa":
+      @@sshkey{"${facts['fqdn']}-rsa":
         # workaround https://tickets.puppetlabs.com/browse/PUP-6589
         host_aliases => $sshd::host_aliases,
         tag          => 'fqdn',
@@ -62,10 +62,18 @@ class sshd::base {
           type         => 'ssh-rsa',
           key          => $facts['sshrsakey'],
         }
+        if $sshd::sshkey_ip6address {
+          @@sshkey{"${sshd::sshkey_ip6address}-rsa":
+            host_aliases => $sshd::sshkey_ip6address,
+            tag          => 'ipaddress',
+            type         => 'ssh-rsa',
+            key          => $facts['sshrsakey'],
+          }
+        }
       }
     }
     if !empty($facts['sshed25519key']) {
-      @@sshkey{"${::fqdn}-ed25519":
+      @@sshkey{"${facts['fqdn']}-ed25519":
         host_aliases => $sshd::host_aliases,
         tag          => 'fqdn',
         type         => 'ssh-ed25519',
@@ -79,6 +87,14 @@ class sshd::base {
           tag          => 'ipaddress',
           type         => 'ssh-ed25519',
           key          => $facts['sshed25519key'],
+        }
+        if $sshd::sshkey_ip6address {
+          @@sshkey{"${sshd::sshkey_ip6address}-ed25519":
+            host_aliases => $sshd::sshkey_ip6address,
+            tag          => 'ipaddress',
+            type         => 'ssh-ed25519',
+            key          => $facts['sshed25519key'],
+          }
         }
       }
     }

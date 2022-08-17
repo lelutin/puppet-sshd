@@ -24,6 +24,14 @@ class sshd::base {
       group   => 0,
       mode    => '0600';
   }
+  file { '/etc/ssh/sshd_config.d':
+    ensure  => directory,
+    notify  => Service[sshd],
+    recurse => true,
+    purge   => true,
+    owner   => root,
+    group   => 0,
+  }
   if $sshd::harden_moduli {
     exec{'harden_ssh_moduli':
       umask       => '077',

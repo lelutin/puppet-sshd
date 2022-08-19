@@ -40,7 +40,7 @@ class sshd::base {
     if !empty($::sshrsakey) {
       @@sshkey{"${::fqdn}-rsa":
         # workaround https://tickets.puppetlabs.com/browse/PUP-6589
-        host_aliases => $facts['fqdn'],
+        host_aliases => $sshd::host_aliases,
         tag          => 'fqdn',
         type         => 'ssh-rsa',
         key          => $facts['sshrsakey'],
@@ -58,7 +58,7 @@ class sshd::base {
     }
     if !empty($facts['sshed25519key']) {
       @@sshkey{"${::fqdn}-ed25519":
-        host_aliases => $facts['fqdn'],
+        host_aliases => $sshd::host_aliases,
         tag          => 'fqdn',
         type         => 'ssh-ed25519',
         key          => $facts['sshed25519key'],

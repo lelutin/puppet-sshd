@@ -8,7 +8,7 @@ class sshd(
   Array[String] $listen_address = [ '0.0.0.0', '::' ],
   $allowed_users = '',
   $allowed_groups = '',
-  $use_pam = 'no',
+  $use_pam = 'yes',
   $use_dns = 'no',
   $permit_root_login = 'without-password',
   $password_authentication = 'no',

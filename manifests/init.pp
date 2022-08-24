@@ -10,7 +10,7 @@ class sshd(
   $allowed_groups = '',
   $use_pam = 'no',
   $use_dns = 'no',
-  $permit_root_login = 'without-password',
+  $permit_root_login = 'prohibit-password',
   $password_authentication = 'no',
   $kerberos_authentication = 'no',
   $kerberos_orlocalpasswd = 'yes',

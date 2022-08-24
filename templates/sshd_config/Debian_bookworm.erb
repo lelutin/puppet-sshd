@@ -4,7 +4,7 @@
 # This is the sshd server system-wide configuration file.  See
 # sshd_config(5) for more information.
 
-# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin:/bin:/usr/games
 
 # The strategy used for options in the default sshd_config shipped with
 # OpenSSH is to specify options with their default value where
@@ -75,7 +75,7 @@ PermitEmptyPasswords <%= scope.lookupvar('::sshd::permit_empty_passwords') %>
 
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
-ChallengeResponseAuthentication <%= scope.lookupvar('::sshd::challenge_response_authentication') %>
+KbdInteractiveAuthentication <%= scope.lookupvar('::sshd::challenge_response_authentication') %>
 
 # Kerberos options
 KerberosAuthentication <%= scope.lookupvar('::sshd::kerberos_authentication') %>
@@ -91,13 +91,13 @@ GSSAPICleanupCredentials <%= scope.lookupvar('::sshd::gssapi_cleanupcredentials'
 
 # Set this to 'yes' to enable PAM authentication, account processing,
 # and session processing. If this is enabled, PAM authentication will
-# be allowed through the ChallengeResponseAuthentication and
+# be allowed through the KbdInteractiveAuthentication and
 # PasswordAuthentication.  Depending on your PAM configuration,
-# PAM authentication via ChallengeResponseAuthentication may bypass
+# PAM authentication via KbdInteractiveAuthentication may bypass
 # the setting of "PermitRootLogin without-password".
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
-# and ChallengeResponseAuthentication to 'no'.
+# and KbdInteractiveAuthentication to 'no'.
 UsePAM <%= scope.lookupvar('::sshd::use_pam') %>
 
 AllowAgentForwarding <%= scope.lookupvar('::sshd::agent_forwarding') %>
@@ -115,7 +115,7 @@ PrintMotd <%= scope.lookupvar('::sshd::print_motd') %>
 #ClientAliveInterval 0
 #ClientAliveCountMax 3
 #UseDNS no
-#PidFile /var/run/sshd.pid
+#PidFile /run/sshd.pid
 #MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none

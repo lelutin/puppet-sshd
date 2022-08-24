@@ -49,7 +49,7 @@ class sshd(
   $sftp_subsystem = '',
   $head_additional_options = '',
   $tail_additional_options = '',
-  $print_motd = 'yes',
+  $print_motd = 'no',
   Array[String[1]] $accept_env = ['LANG', 'LC_*'],
   Boolean $manage_shorewall = false,
   $shorewall_source = 'net',

@@ -18,9 +18,9 @@ describe 'ssh_keygen' do
     }.should(raise_error(Puppet::ParseError))
   end
 
-  it 'should raise a ParseError if there is more than 1 arguments' do
+  it 'should raise a ParseError if there is more than 2 arguments' do
     lambda {
-      scope.function_ssh_keygen(["foo", "bar"])
+      scope.function_ssh_keygen(["foo", "bar", "quux"])
     }.should( raise_error(Puppet::ParseError))
   end
 
@@ -98,6 +98,17 @@ describe 'ssh_keygen' do
       File.stubs(:directory?).with("/tmp/a/b").returns(true)
       Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'rsa', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("")
       result = scope.function_ssh_keygen(['/tmp/a/b/c'])
+      result.length.should == 2
+      result[0].should == 'privatekey'
+      result[1].should == 'publickey'
+    end
+
+    it "should be able to generate ed25519 keys" do
+      File.stubs(:exists?).with("/tmp/a/b/c").returns(false)
+      File.stubs(:exists?).with("/tmp/a/b/c.pub").returns(false)
+      File.stubs(:directory?).with("/tmp/a/b").returns(true)
+      Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'ed25519', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("")
+      result = scope.function_ssh_keygen(['/tmp/a/b/c', 'ed25519'])
       result.length.should == 2
       result[0].should == 'privatekey'
       result[1].should == 'publickey'

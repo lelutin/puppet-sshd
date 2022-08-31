@@ -20,7 +20,7 @@ Puppet::Parser::Functions::newfunction(:ssh_keygen, :type => :rvalue, :doc =>
     end
     unless [private_key_path,public_key_path].all?{|path| File.exists?(path) }
       output = Puppet::Util::Execution.execute(
-        ['/usr/bin/ssh-keygen','-t', 'rsa', '-b', '4096', 
+        ['/usr/bin/ssh-keygen','-t', 'rsa',
          '-f', private_key_path, '-P', '', '-q'])
       raise Puppet::ParseError, "Something went wrong during key generation! Output: #{output}" unless output.empty?
     end

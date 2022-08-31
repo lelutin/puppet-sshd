@@ -96,7 +96,7 @@ describe 'ssh_keygen' do
       File.stubs(:exists?).with("/tmp/a/b/c").returns(false)
       File.stubs(:exists?).with("/tmp/a/b/c.pub").returns(false)
       File.stubs(:directory?).with("/tmp/a/b").returns(true)
-      Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'rsa', '-b', '4096', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("")
+      Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'rsa', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("")
       result = scope.function_ssh_keygen(['/tmp/a/b/c'])
       result.length.should == 2
       result[0].should == 'privatekey'
@@ -107,7 +107,7 @@ describe 'ssh_keygen' do
       File.stubs(:exists?).with("/tmp/a/b/c").returns(false)
       File.stubs(:exists?).with("/tmp/a/b/c.pub").returns(false)
       File.stubs(:directory?).with("/tmp/a/b").returns(true)
-      Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'rsa', '-b', '4096', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("something is wrong")
+      Puppet::Util::Execution.expects(:execute).with(['/usr/bin/ssh-keygen','-t', 'rsa', '-f', '/tmp/a/b/c', '-P', '', '-q']).returns("something is wrong")
       lambda {
         scope.function_ssh_keygen(["/tmp/a/b/c"])
       }.should( raise_error(Puppet::ParseError))

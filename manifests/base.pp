@@ -44,7 +44,11 @@ class sshd::base {
 
   # Now add the key, if we've got one
   if $settings::storeconfigs {
-    if !empty($facts['ssh']['rsa']['key']) {
+    if (
+      !empty($facts['ssh'])
+      and !empty($facts['ssh']['rsa'])
+      and !empty($facts['ssh']['rsa']['key'])
+    ) {
       @@sshkey { "${facts['networking']['fqdn']}-rsa":
         # workaround https://tickets.puppetlabs.com/browse/PUP-6589
         host_aliases => $sshd::host_aliases,
@@ -71,7 +75,11 @@ class sshd::base {
         }
       }
     }
-    if !empty($facts['ssh']['ed25519']['key']) {
+    if (
+      !empty($facts['ssh'])
+      and !empty($facts['ssh']['ed25519'])
+      and !empty($facts['ssh']['ed25519']['key'])
+    ) {
       @@sshkey { "${facts['networking']['fqdn']}-ed25519":
         host_aliases => $sshd::host_aliases,
         tag          => 'fqdn',

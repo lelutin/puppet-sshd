@@ -7,7 +7,8 @@ class sshd (
   $ports = [22],
   Boolean
   $shared_ip = false,
-  $host_aliases = $facts['fqdn'],
+  Array[String[1]]
+  $host_aliases = [$facts['networking']['fqdn']],
   $ensure_version = 'installed',
   Array[String]
   $listen_address = ['0.0.0.0', '::'],

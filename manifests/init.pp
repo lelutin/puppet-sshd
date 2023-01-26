@@ -1,12 +1,16 @@
 # manage an sshd installation
-class sshd(
-  Boolean $manage_nagios = false,
+class sshd (
+  Boolean
+  $manage_nagios = false,
   $nagios_check_ssh_hostname = 'absent',
-  Array[Variant[String,Integer]] $ports = [ 22 ],
-  $shared_ip = 'no',
+  Array[Variant[String,Integer]]
+  $ports = [22],
+  Boolean
+  $shared_ip = false,
   $host_aliases = $facts['fqdn'],
   $ensure_version = 'installed',
-  Array[String] $listen_address = [ '0.0.0.0', '::' ],
+  Array[String]
+  $listen_address = ['0.0.0.0', '::'],
   $allowed_users = '',
   $allowed_groups = '',
   $use_pam = 'yes',
@@ -29,63 +33,74 @@ class sshd(
   $rhosts_rsa_authentication = 'no',
   $hostbased_authentication = 'no',
   $permit_empty_passwords = 'no',
-  $authorized_keys_file = $::osfamily ? {
-    'Debian' => $::operatingsystemmajrelease ? {
+  $authorized_keys_file = $facts['os']['family'] ? {
+    'Debian' => $facts['os']['release']['major'] ? {
       '6'     => '%h/.ssh/authorized_keys',
       default => '%h/.ssh/authorized_keys %h/.ssh/authorized_keys2',
     },
-    'RedHat' => $::operatingsystemmajrelease ? {
+    'RedHat' => $facts['os']['release']['major'] ? {
       '5'     => '%h/.ssh/authorized_keys',
       '6'     => '%h/.ssh/authorized_keys',
-      default => '%h/.ssh/authorized_keys %h/.ssh/authorized_keys2',
+      default => '%h/.ssh/authorized_keys',
     },
     'OpenBSD' => '%h/.ssh/authorized_keys',
     default   => '%h/.ssh/authorized_keys %h/.ssh/authorized_keys2',
   },
-  Variant[Boolean,String] $hardened = false,
-  Boolean $hardened_client = false,
-  Boolean $harden_moduli = false,
-  Boolean $use_host_dsa_key = false,
-  Boolean $use_host_ecdsa_key = false,
+  Variant[Boolean,String]
+  $hardened = false,
+  Boolean
+  $hardened_client = false,
+  Boolean
+  $harden_moduli = false,
+  Boolean
+  $use_host_dsa_key = false,
+  Boolean
+  $use_host_ecdsa_key = false,
   $sftp_subsystem = '',
   $head_additional_options = '',
   $tail_additional_options = '',
   $print_motd = 'no',
-  Array[String[1]] $accept_env = ['LANG', 'LC_*'],
-  Boolean $manage_shorewall = false,
-  $shorewall_source = 'net',
-  $sshkey_ipaddress = pick($default_ipaddress,$::ipaddress),
-  Boolean $manage_client = true,
-  Boolean $purge_sshkeys = true,
+  Array[String[1]]
+  $accept_env = ['LANG', 'LC_*'],
+  Boolean
+  $manage_firewall = false,
+  $firewall_source = 'net',
+  Stdlib::IP::Address::V4::Nosubnet $sshkey_ipaddress = $facts['networking']['ip'],
+  Optional[Stdlib::IP::Address::V6::Nosubnet] $sshkey_ip6address = $facts['networking']['ip6'],
+  Boolean
+  $manage_client = true,
+  Boolean
+  $purge_sshkeys = true,
 ) {
-
   if $manage_client {
-    class{'::sshd::client':
-      shared_ip        => $shared_ip,
-      ensure_version   => $ensure_version,
-      manage_shorewall => $manage_shorewall,
-      hardened         => $hardened_client,
+    class { 'sshd::client':
+      shared_ip       => $shared_ip,
+      ensure_version  => $ensure_version,
+      manage_firewall => $manage_firewall,
+      hardened        => $hardened_client,
     }
   }
 
-  case $::operatingsystem {
-    'Gentoo': { include ::sshd::gentoo }
-    'RedHat','CentOS': { include ::sshd::redhat }
-    'OpenBSD': { include ::sshd::openbsd }
-    'Debian','Ubuntu': { include ::sshd::debian }
-    default: { include ::sshd::base }
+  case $facts['os']['name'] {
+    'Gentoo': { include sshd::gentoo }
+    'RedHat','CentOS': { include sshd::redhat }
+    'OpenBSD': { include sshd::openbsd }
+    'Debian','Ubuntu': { include sshd::debian }
+    default: { include sshd::base }
   }
 
   if $manage_nagios {
-    sshd::nagios{$ports:
-      check_hostname => $nagios_check_ssh_hostname
+    $ports.each |$port| {
+      sshd::nagios { String($port):
+        check_hostname => $nagios_check_ssh_hostname,
+      }
     }
   }
 
-  if $manage_shorewall {
-    class{'::shorewall::rules::ssh':
+  if $manage_firewall {
+    class { 'firewall::rules::ssh':
       ports  => $ports,
-      source => $shorewall_source
+      source => $firewall_source,
     }
   }
 }
